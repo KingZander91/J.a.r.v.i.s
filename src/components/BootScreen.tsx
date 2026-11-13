@@ -46,6 +46,9 @@ export function BootScreen({ state, error, onRetry, onDone }: BootScreenProps) {
     state === 'ready'
       ? Math.round((revealed / BOOT_LINES.length) * 100)
       : Math.min(84, Math.round((revealed / BOOT_LINES.length) * 84));
+  const hosted =
+    typeof window !== 'undefined' &&
+    !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(window.location.hostname);
 
   if (state === 'error') {
     return (
@@ -60,8 +63,12 @@ export function BootScreen({ state, error, onRetry, onDone }: BootScreenProps) {
           <p className="boot__error-msg">{error ?? 'The command server did not respond.'}</p>
           <div className="boot__terminal">
             <Terminal size={14} />
-            <code>npm run dev</code>
-            <span>starts the API on :8787 and the interface on :3000</span>
+            <code>{hosted ? 'GET /api/health' : 'npm run dev'}</code>
+            <span>
+              {hosted
+                ? 'check the deployment function logs and environment variables'
+                : 'starts the API on :8787 and the interface on :3000'}
+            </span>
           </div>
           <button className="btn btn--primary" onClick={onRetry}>
             <RotateCw size={14} /> Retry uplink

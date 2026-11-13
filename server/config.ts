@@ -2,8 +2,13 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import dotenv from 'dotenv';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-export const ROOT_DIR = path.resolve(__dirname, '..');
+/* Vercel may bundle this entry as CommonJS, where import.meta is absent.
+   Resolve from __dirname when available, otherwise from the ESM URL. */
+const moduleDir =
+  typeof __dirname === 'string'
+    ? __dirname
+    : path.dirname(fileURLToPath(import.meta.url));
+export const ROOT_DIR = path.resolve(moduleDir, '..');
 
 dotenv.config({ path: path.join(ROOT_DIR, '.env') });
 
