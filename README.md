@@ -162,6 +162,8 @@ Add provider keys as **Vercel Environment Variables** — never commit `.env`. T
 
 > **Vercel storage is ephemeral.** Vercel Functions can only write to `/tmp`, and each instance has its own copy. The app automatically uses `/tmp/jarvis` when `VERCEL` is set. Sessions, memories, artifacts and custom agents therefore reset on cold starts and are not shared between concurrent instances. For durable state, set `JARVIS_DATA_DIR` to a mounted persistent volume or run the app on a long-lived host. The function timeout is 60 seconds in `vercel.json`; raise it for longer provider runs if your plan allows.
 
+> **Approval gates need one instance.** Approval and question answers are held in the in-memory run registry. If Vercel routes the follow-up request to a different function instance, the gate cannot be resolved and the run waits until its timeout. Use Vercel for the Simulation Core and approval-free demos; use a long-lived host (or add shared run state) for approval-sensitive work.
+
 ---
 
 ## Tools
