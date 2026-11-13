@@ -144,6 +144,24 @@ TAVILY_API_KEY=
 
 Keys saved through the UI are written to `data/secrets.json` with owner-only permissions (`0600`). Keys are never returned to the browser after saving; the UI only receives a `saved`/`missing`/`env` state.
 
+### Deploy on Vercel
+
+The repository ships with a Vercel configuration:
+
+- `api/index.ts` exports the Express app as one Node.js function.
+- `vercel.json` builds the Vite client into `dist/` and rewrites every `/api/*` request to that function.
+- SSE streaming is enabled by default on Vercel’s Node.js runtime, so plans, tokens and tool events stream normally.
+
+Import the GitHub repository into Vercel, or run:
+
+```bash
+npx vercel
+```
+
+Add provider keys as **Vercel Environment Variables** — never commit `.env`. The app runs with the built-in Simulation Core if no keys are configured.
+
+> **Vercel storage is ephemeral.** Vercel Functions can only write to `/tmp`, and each instance has its own copy. The app automatically uses `/tmp/jarvis` when `VERCEL` is set. Sessions, memories, artifacts and custom agents therefore reset on cold starts and are not shared between concurrent instances. For durable state, set `JARVIS_DATA_DIR` to a mounted persistent volume or run the app on a long-lived host. The function timeout is 60 seconds in `vercel.json`; raise it for longer provider runs if your plan allows.
+
 ---
 
 ## Tools
@@ -194,7 +212,7 @@ data/
 ```
 
 - Atomic writes (`write temp → fsync → rename`) protect the JSON store.
-- Data directory is configurable with `JARVIS_DATA_DIR`.
+- Data directory is configurable with `JARVIS_DATA_DIR`. On Vercel it defaults to `/tmp/jarvis`; that data is ephemeral and per-instance.
 - `data/` and `.env` are gitignored.
 - Sessions can be exported as Markdown from the channel header or `GET /api/sessions/:id/export`.
 - **Settings → System → Delete all data** erases every channel, memory, artifact and custom agent, then clears `data/workspace`. Built-in intelligences, settings, provider keys and interface preferences are preserved. The server refuses the request while a run is streaming.

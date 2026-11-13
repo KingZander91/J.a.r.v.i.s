@@ -9,9 +9,13 @@ dotenv.config({ path: path.join(ROOT_DIR, '.env') });
 
 export const VERSION = '2.0.0';
 export const PORT = Number(process.env.PORT || 8787);
+
+/* Vercel Functions have a read-only project filesystem. /tmp is the only
+   writable location, and it is ephemeral per function instance. */
+const DEFAULT_DATA_DIR = process.env.VERCEL ? '/tmp/jarvis' : 'data';
 export const DATA_DIR = path.resolve(
   ROOT_DIR,
-  process.env.JARVIS_DATA_DIR || 'data',
+  process.env.JARVIS_DATA_DIR || DEFAULT_DATA_DIR,
 );
 export const WORKSPACE_DIR = path.join(DATA_DIR, 'workspace');
 export const DB_FILE = path.join(DATA_DIR, 'jarvis.json');

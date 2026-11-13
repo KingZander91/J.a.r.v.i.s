@@ -604,26 +604,32 @@ app.use((error: unknown, _req: Request, res: Response, _next: unknown) => {
   }
 });
 
-const server = app.listen(PORT, () => {
-  const status = store.providerStatus();
-  const line = '─'.repeat(54);
-  console.log(`\n\x1b[38;5;49m${line}\x1b[0m`);
-  console.log('  \x1b[1mJ.A.R.V.I.S. // AGENTIC CORE\x1b[0m');
-  console.log(`  version ${VERSION} · node ${process.version}`);
-  console.log(`  api      http://localhost:${PORT}/api`);
-  console.log(`  provider ${status.label}${status.configured ? ' · READY' : ' · KEY REQUIRED'}`);
-  console.log(`  tools    ${toolInfos().length} registered · workspace ./data/workspace`);
-  console.log(`  mode     ${IS_PRODUCTION ? 'production' : 'development'}`);
-  console.log(`\x1b[38;5;49m${line}\x1b[0m\n`);
-});
+export default app;
 
-for (const signal of ['SIGINT', 'SIGTERM'] as const) {
-  process.on(signal, () => {
-    console.log('\n[core] Shutting down. Aborting active runs.');
-    for (const run of activeRuns.values()) run.controller.abort();
-    server.close(() => process.exit(0));
-    setTimeout(() => process.exit(0), 1500);
+/* Vercel imports the app as a serverless function. Everywhere else the
+   process owns the port and the shutdown lifecycle. */
+if (!process.env.VERCEL) {
+  const server = app.listen(PORT, () => {
+    const status = store.providerStatus();
+    const line = '─'.repeat(54);
+    console.log(`\n\x1b[38;5;49m${line}\x1b[0m`);
+    console.log('  \x1b[1mJ.A.R.V.I.S. // AGENTIC CORE\x1b[0m');
+    console.log(`  version ${VERSION} · node ${process.version}`);
+    console.log(`  api      http://localhost:${PORT}/api`);
+    console.log(`  provider ${status.label}${status.configured ? ' · READY' : ' · KEY REQUIRED'}`);
+    console.log(`  tools    ${toolInfos().length} registered · workspace ${WORKSPACE_DIR}`);
+    console.log(`  mode     ${IS_PRODUCTION ? 'production' : 'development'}`);
+    console.log(`\x1b[38;5;49m${line}\x1b[0m\n`);
   });
+
+  for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+    process.on(signal, () => {
+      console.log('\n[core] Shutting down. Aborting active runs.');
+      for (const run of activeRuns.values()) run.controller.abort();
+      server.close(() => process.exit(0));
+      setTimeout(() => process.exit(0), 1500);
+    });
+  }
 }
 
 // Keep the process alive if a provider stream hangs.

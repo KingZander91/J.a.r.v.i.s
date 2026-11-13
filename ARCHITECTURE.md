@@ -42,11 +42,16 @@ This document describes how J.A.R.V.I.S. is put together: process topology, data
 
 In development, Vite runs on `3000` and proxies `/api` to Express on `8787`. In production, Express serves `dist/` and the API on `8787`.
 
+On Vercel, `api/index.ts` exports the same Express app as one Node.js function, `vercel.json` builds the Vite client and rewrites `/api/*` to the function, and `server/index.ts` skips `app.listen()` when `VERCEL` is set. Runtime state moves to `/tmp/jarvis` because the project filesystem is read-only.
+
 ---
 
 ## 3. Directory map
 
 ```
+api/
+└── index.ts              Vercel function entry; exports the Express app
+
 server/
 ├── index.ts              HTTP routes, SSE transport, active-run registry, static serving
 ├── config.ts             paths, provider presets, env keys, version
@@ -90,6 +95,8 @@ src/
 
 scripts/
 └── smoke.mjs             isolated end-to-end API harness
+
+vercel.json               Vite build, /api rewrite, function duration and memory
 ```
 
 ---
