@@ -1,0 +1,43 @@
+{
+  "name": "jarvis-agentic-core",
+  "private": true,
+  "version": "2.0.0",
+  "type": "module",
+  "description": "J.A.R.V.I.S. — an agentic AI command center with tools, memory, planning and a holographic reactor interface.",
+  "scripts": {
+    "dev": "concurrently -k -n CORE,WEB -c green,cyan \"tsx watch server/index.ts\" \"vite\"",
+    "dev:web": "vite",
+    "dev:server": "tsx watch server/index.ts",
+    "build": "tsc --noEmit && vite build",
+    "start": "NODE_ENV=production tsx server/index.ts",
+    "typecheck": "tsc --noEmit",
+    "smoke": "node scripts/smoke.mjs",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dompurify": "^3.2.6",
+    "dotenv": "^16.5.0",
+    "express": "^4.21.2",
+    "highlight.js": "^11.11.1",
+    "lucide-react": "^0.468.0",
+    "marked": "^15.0.7",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "three": "^0.170.0",
+    "zustand": "^5.0.3"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.10.5",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@types/three": "^0.170.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^9.1.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "vite": "^6.0.7"
+  }
+}
